@@ -1,4 +1,4 @@
-package me.yonniton.android.experiment
+package me.yonniton.waveform
 
 import org.junit.Test
 

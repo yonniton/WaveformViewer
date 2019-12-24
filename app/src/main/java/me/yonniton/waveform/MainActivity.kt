@@ -1,8 +1,8 @@
-package me.yonniton.android.experiment
+package me.yonniton.waveform
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import me.yonniton.android.experiment.main.MainFragment
+import me.yonniton.waveform.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

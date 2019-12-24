@@ -1,4 +1,4 @@
-package me.yonniton.android.experiment.main
+package me.yonniton.waveform.ui.main
 
 import androidx.lifecycle.ViewModel
 
