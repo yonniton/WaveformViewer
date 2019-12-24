@@ -1,19 +1,19 @@
 package me.yonniton.waveform
 
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import me.yonniton.waveform.ui.main.MainFragment
+import androidx.appcompat.app.AppCompatActivity
+import me.yonniton.waveform.ui.fragment.FragmentFileChooser
 
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(save: Bundle?) {
+        super.onCreate(save)
         setContentView(R.layout.main_activity)
-        if (savedInstanceState == null) {
+        if (save == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
+                .replace(R.id.container, FragmentFileChooser.newInstance())
+                .commit()
         }
     }
 }
