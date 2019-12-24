@@ -1,5 +1,6 @@
 package me.yonniton.waveform
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import me.yonniton.waveform.ui.main.MainFragment
@@ -15,5 +16,10 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
     }
+}
 
+interface WaveformViewerNavigator {
+    fun showFilePicker() {/* no-op*/}
+    fun showWaveformViewer(mp3Uri: Uri) {/* no-op*/}
+    fun hideWaveformViewer() {/* no-op*/}
 }
