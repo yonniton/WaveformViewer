@@ -11,9 +11,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import me.yonniton.waveform.R
 import me.yonniton.waveform.WaveformViewerNavigator
 import me.yonniton.waveform.databinding.FragmentFileChooserBinding
+import me.yonniton.waveform.ui.main.MainFragment
 import me.yonniton.waveform.ui.main.MainViewModel
 import me.yonniton.waveform.ui.main.MainViewModel.Companion.RESULT_CODE_FILE_CHOOSER
 
@@ -31,7 +33,12 @@ class FragmentFileChooser : Fragment() {
         }
 
         override fun showWaveformViewer(mp3Uri: Uri) {
-            Toast.makeText(context, "TODO showWaveformViewer[$mp3Uri]", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                .setTransition(TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.container, MainFragment.newInstance())
+                .commit()
         }
     }
 
