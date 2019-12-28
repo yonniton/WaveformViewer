@@ -56,8 +56,10 @@ class FragmentFileChooser : Fragment() {
         if (requestCode == RESULT_CODE_FILE_CHOOSER && resultCode == AppCompatActivity.RESULT_OK) {
             val fileUri = data?.data
             val mp3Uri = fileUri?.takeIf { viewModel.isFileMp3(requireActivity().contentResolver, it) }
-            mp3Uri?.also { viewModel.prepareWaveform(it) }
-                ?: run { Toast.makeText(context, "file chooser result has a missing or invalid file Uri[$fileUri]", Toast.LENGTH_SHORT).show() }
+            mp3Uri?.also {
+                viewModel.mp3Uri = it
+                navigator.showWaveformViewer(it)
+            } ?: run { Toast.makeText(context, "file chooser result has a missing or invalid file Uri[$fileUri]", Toast.LENGTH_SHORT).show() }
         }
     }
 }

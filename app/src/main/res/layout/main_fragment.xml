@@ -16,8 +16,9 @@
             android:id="@+id/player_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_play"
+            imageResource="@{viewModel.iconPlayPause, default=@android:drawable/ic_media_play}"
             android:contentDescription="Play/Pause"
+            android:onClick="@{() -> viewModel.togglePlayback(context)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
