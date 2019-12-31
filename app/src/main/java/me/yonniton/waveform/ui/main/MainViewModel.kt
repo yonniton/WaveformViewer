@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableFloat
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import com.google.android.exoplayer2.ExoPlayer
@@ -13,7 +15,11 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.SimpleExoPlayer
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import me.yonniton.waveform.R
+import java.util.concurrent.TimeUnit
 
 class MainViewModel : ViewModel() {
 
@@ -41,7 +47,15 @@ class MainViewModel : ViewModel() {
         }
 
     internal var mp3Uri: Uri? = null
+    private var disposable: Disposable? = null
+        set(value) {
+            field?.dispose()
+            field = value
+        }
+
     val iconPlayPause = ObservableInt(android.R.drawable.ic_media_play)
+    val playbackProgress = ObservableField<String>()
+    val playbackPercent = ObservableFloat()
 
     fun isFileMp3(contentResolver: ContentResolver, fileUri: Uri?): Boolean {
         return fileUri?.let {
@@ -71,15 +85,25 @@ class MainViewModel : ViewModel() {
     private fun ExoPlayer.startPlayback() {
         playWhenReady = true
         iconPlayPause.set(android.R.drawable.ic_media_pause)
+        Observable.timer(200, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .repeatUntil { !isPlaying }
+            .subscribe {
+                playbackProgress.set("%.3f / %.3f".format(contentPosition / 1000f, contentDuration / 1000f))
+                playbackPercent.set(contentPosition / contentDuration.toFloat())
+            }
+            .also { disposable = it }
     }
 
     private fun ExoPlayer.stopPlayback() {
         playWhenReady = false
         iconPlayPause.set(android.R.drawable.ic_media_play)
+        disposable = null
     }
 
     private fun cleanup() {
         player = null
+        disposable = null
     }
 
     fun togglePlayback(context: Context) {

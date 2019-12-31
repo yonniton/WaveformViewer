@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -16,12 +17,22 @@
             android:id="@+id/player_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            tools:src="@android:drawable/ic_media_play"
             imageResource="@{viewModel.iconPlayPause, default=@android:drawable/ic_media_play}"
             android:contentDescription="Play/Pause"
             android:onClick="@{() -> viewModel.togglePlayback(context)}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+            android:id="@+id/playback_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@{viewModel.playbackProgress}"
+            tools:text="12 / 34"
+            app:layout_constraintBottom_toTopOf="@+id/player_button"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
