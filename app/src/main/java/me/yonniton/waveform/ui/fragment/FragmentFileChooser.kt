@@ -37,7 +37,7 @@ class FragmentFileChooser : Fragment() {
                 .beginTransaction()
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                 .setTransition(TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.container, MainFragment.newInstance())
+                .replace(R.id.container, MainFragment.newInstance(mp3Uri))
                 .commit()
         }
     }
@@ -57,7 +57,6 @@ class FragmentFileChooser : Fragment() {
             val fileUri = data?.data
             val mp3Uri = fileUri?.takeIf { viewModel.isFileMp3(requireActivity().contentResolver, it) }
             mp3Uri?.also {
-                viewModel.mp3Uri = it
                 navigator.showWaveformViewer(it)
             } ?: run { Toast.makeText(context, "file chooser result has a missing or invalid file Uri[$fileUri]", Toast.LENGTH_SHORT).show() }
         }
