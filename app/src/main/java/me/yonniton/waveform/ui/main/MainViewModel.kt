@@ -3,13 +3,17 @@ package me.yonniton.waveform.ui.main
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.net.Uri
 import android.widget.Toast
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
+import com.google.android.exoplayer2.ExoPlayer
 import me.yonniton.waveform.WaveformViewerNavigator
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.SimpleExoPlayer
+import me.yonniton.waveform.R
 
 class MainViewModel : ViewModel() {
 
@@ -30,7 +34,7 @@ class MainViewModel : ViewModel() {
 
     lateinit var navigator: WaveformViewerNavigator
 
-    private var player: MediaPlayer? = null
+    private var player: ExoPlayer? = null
         set(value) {
             field?.release()
             field = value
@@ -55,23 +59,22 @@ class MainViewModel : ViewModel() {
         }
 
         cleanup()
-        player = MediaPlayer().apply {
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-                .also { setAudioAttributes(it) }
-            setDataSource(context, mp3Uri)
-            prepare()
-        }
+        val mediaSource = Util.getUserAgent(context, context.getString(R.string.app_name))
+            .let { userAgentString -> DefaultDataSourceFactory(context, userAgentString) }
+            .let { dataSourceFactory -> ProgressiveMediaSource.Factory(dataSourceFactory) }
+            .let { progressiveMediaSourceFactory -> progressiveMediaSourceFactory.createMediaSource(mp3Uri) }
+        player = SimpleExoPlayer.Builder(context)
+            .build()
+            .apply { prepare(mediaSource) }
     }
 
-    private fun MediaPlayer.startPlayback() {
-        start()
+    private fun ExoPlayer.startPlayback() {
+        playWhenReady = true
         iconPlayPause.set(android.R.drawable.ic_media_pause)
     }
 
-    private fun MediaPlayer.stopPlayback() {
-        pause()
+    private fun ExoPlayer.stopPlayback() {
+        playWhenReady = false
         iconPlayPause.set(android.R.drawable.ic_media_play)
     }
 
