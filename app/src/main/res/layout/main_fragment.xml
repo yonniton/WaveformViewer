@@ -20,7 +20,7 @@
             tools:src="@android:drawable/ic_media_play"
             imageResource="@{viewModel.iconPlayPause, default=@android:drawable/ic_media_play}"
             android:contentDescription="Play/Pause"
-            android:onClick="@{() -> viewModel.togglePlayback(context)}"
+            android:onClick="@{() -> viewModel.togglePlayback()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -30,9 +30,19 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:text="@{viewModel.playbackProgress}"
+            android:elevation="1dp"
             tools:text="12 / 34"
             app:layout_constraintBottom_toTopOf="@+id/player_button"
             app:layout_constraintStart_toStartOf="parent"/>
+        <me.yonniton.waveform.ui.PlayerVisualizerView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            audioBytes="@{viewModel.playbackBytes}"
+            playbackPercent="@{viewModel.playbackPercent}"
+            app:layout_constraintBottom_toTopOf="@+id/playback_progress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

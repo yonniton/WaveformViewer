@@ -34,7 +34,10 @@ class MainFragment : Fragment() {
             ?.also { viewModel.mp3Uri = it }
             ?: run { Toast.makeText(context, "missing MP3 Uri", Toast.LENGTH_SHORT).show() }
         return DataBindingUtil.inflate<MainFragmentBinding>(inflater, R.layout.main_fragment, container, false)
-            .also { binding -> binding.viewModel = viewModel }
+            .also { binding ->
+                binding.viewModel = viewModel
+                lifecycle.addObserver(viewModel)
+            }
             .root
     }
 }

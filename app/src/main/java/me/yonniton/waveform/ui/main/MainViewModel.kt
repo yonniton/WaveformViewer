@@ -1,14 +1,15 @@
 package me.yonniton.waveform.ui.main
 
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import androidx.databinding.ObservableInt
-import androidx.lifecycle.ViewModel
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.*
 import com.google.android.exoplayer2.ExoPlayer
 import me.yonniton.waveform.WaveformViewerNavigator
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -21,7 +22,7 @@ import io.reactivex.disposables.Disposable
 import me.yonniton.waveform.R
 import java.util.concurrent.TimeUnit
 
-class MainViewModel : ViewModel() {
+class MainViewModel : LifecycleObserver, ViewModel() {
 
     companion object {
         /** a convenience [Intent] for invoking a native MP3 chooser */
@@ -54,6 +55,7 @@ class MainViewModel : ViewModel() {
         }
 
     val iconPlayPause = ObservableInt(android.R.drawable.ic_media_play)
+    val playbackBytes = ObservableField<ByteArray>(ByteArray(0))
     val playbackProgress = ObservableField<String>()
     val playbackPercent = ObservableFloat()
 
@@ -63,8 +65,18 @@ class MainViewModel : ViewModel() {
         } ?: false
     }
 
-    private fun preparePlayback(context: Context) {
-        if (mp3Uri == null) {
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun preparePlayback(lifecycleOwner: LifecycleOwner) {
+        val context = when(lifecycleOwner) {
+            is Fragment -> lifecycleOwner.requireContext()
+            is FragmentActivity -> lifecycleOwner
+            else -> throw IllegalArgumentException("lifecycleOwner[$lifecycleOwner] does not have a android.content.Context")
+        }
+        mp3Uri?.let { uri ->
+            context.contentResolver.openInputStream(uri)
+                ?.use { stream -> stream.readBytes() }
+                ?.also { bytes -> playbackBytes.set(bytes) }
+        } ?: run {
             "missing media Uri".also { errMsg ->
                 System.err.println(errMsg)
                 Toast.makeText(context, errMsg, Toast.LENGTH_SHORT).show()
@@ -106,10 +118,9 @@ class MainViewModel : ViewModel() {
         disposable = null
     }
 
-    fun togglePlayback(context: Context) {
+    fun togglePlayback() {
         if (player == null) {
             cleanup()
-            preparePlayback(context)
         }
 
         player?.apply {
