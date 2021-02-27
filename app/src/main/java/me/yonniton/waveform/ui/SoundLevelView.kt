@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
-import me.yonniton.waveform.R
 
 /**
  * source: [Android Example](https://androidexample.com/Detect_Noise_Or_Blow_Sound_-_Set_Sound_Frequency_Thersold/index.php?view=article_discription&aid=108&aaid=130)
@@ -18,18 +17,18 @@ class SoundLevelView(
     attrs: AttributeSet?
 ) : View(context, attrs) {
 
-    private val barGreen: Drawable = ContextCompat.getDrawable(context, R.drawable.greenbar)!!
-    private val barRed: Drawable = ContextCompat.getDrawable(context, R.drawable.redbar)!!
+    private val pipGreen: Drawable = ContextCompat.getDrawable(context, android.R.drawable.presence_audio_online)!!
+    private val pipRed: Drawable = ContextCompat.getDrawable(context, android.R.drawable.presence_audio_busy)!!
     private val backgroundPaint: Paint
-    private val barHeight: Int
-    private val barWidth: Int
-    private var mThreshold = 0
-    private var mVol = 0
+    private val pipHeight: Int
+    private val pipWidth: Int
+    private var threshold = 0
+    private var volume = 0
 
     fun setLevel(volume: Int, threshold: Int) {
-        if (volume == mVol && threshold == mThreshold) return
-        mVol = volume
-        mThreshold = threshold
+        if (volume == this.volume && threshold == this.threshold) return
+        this.volume = volume
+        this.threshold = threshold
 
         // invalidate onDraw and draw voice points
         invalidate()
@@ -37,19 +36,22 @@ class SoundLevelView(
 
     public override fun onDraw(canvas: Canvas) {
         canvas.drawPaint(backgroundPaint)
-        for (i in 0..mVol) {
-            val bar: Drawable = if (i < mThreshold) barGreen else barRed
-            bar.setBounds((10 - i) * barWidth, 0, (10 - i + 1) * barWidth, barHeight)
-            bar.draw(canvas)
+        0.rangeTo(volume).forEach { level ->
+            val bar = pipGreen.takeIf { level < threshold }
+                ?: pipRed
+            with(bar) {
+                setBounds((10 - level) * pipWidth, 0, (10 - level + 1) * pipWidth, pipHeight)
+                draw(canvas)
+            }
         }
     }
 
     init {
 
-        barWidth = barGreen.intrinsicWidth
-        minimumWidth = barWidth * 10
-        barHeight = barGreen.intrinsicHeight
-        minimumHeight = barHeight
+        pipWidth = pipGreen.intrinsicWidth
+        minimumWidth = pipWidth * 10
+        pipHeight = pipGreen.intrinsicHeight
+        minimumHeight = pipHeight
 
         // paints canvas background color
         backgroundPaint = Paint().apply {
