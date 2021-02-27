@@ -3,7 +3,7 @@ package me.yonniton.waveform
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import me.yonniton.waveform.ui.fragment.FragmentFileChooser
+import me.yonniton.waveform.ui.fragment.NoiseAlert
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         if (save == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, FragmentFileChooser.newInstance())
+                .replace(R.id.container, NoiseAlert())
                 .commit()
         }
     }
