@@ -1,7 +1,9 @@
 package me.yonniton.waveform.ui.fragment
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
@@ -10,10 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import me.yonniton.waveform.R
 import me.yonniton.waveform.databinding.NoiseAlertBinding
 import me.yonniton.waveform.ui.SoundLevelView
@@ -45,6 +51,17 @@ class NoiseAlert : Fragment() {
     private lateinit var display: SoundLevelView
 
     private lateinit var soundMeter: SoundMeter
+
+    internal var mp3Uri: Uri? = Uri.fromFile(
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES)
+            .resolve("alert.mp3")
+    )
+
+    private var player: ExoPlayer? = null
+        set(value) {
+            field?.release()
+            field = value
+        }
 
     /****************** Define runnable thread again and again detect noise  */
     private val sleepTask = Runnable {
@@ -120,6 +137,7 @@ class NoiseAlert : Fragment() {
         Log.i("NoiseAlert", "==== Stop Noise Monitoring===")
         wakeLock?.takeIf { it.isHeld }
             ?.also { it.release() }
+        player?.stop()
         handler.removeCallbacks(sleepTask)
         handler.removeCallbacks(pollTask)
         soundMeter.stop()
@@ -141,10 +159,21 @@ class NoiseAlert : Fragment() {
 
 //        stop()
 
-        // show alert when noise threshold crossed
-        Toast.makeText(
-            requireContext(), "Noise Threshold Crossed",
-            Toast.LENGTH_LONG
-        ).show()
+        if (player?.isPlaying == true) {
+            return // playback continues
+        }
+
+        // sound alert when noise threshold crossed
+        val context = requireContext()
+        val mediaSource = Util.getUserAgent(context, context.getString(R.string.app_name))
+            .let { userAgentString -> DefaultDataSourceFactory(context, userAgentString) }
+            .let { dataSourceFactory -> ProgressiveMediaSource.Factory(dataSourceFactory) }
+            .let { progressiveMediaSourceFactory -> progressiveMediaSourceFactory.createMediaSource(mp3Uri) }
+        player = SimpleExoPlayer.Builder(context)
+            .build()
+            .apply {
+                prepare(mediaSource)
+                playWhenReady = true
+            }
     }
 }
