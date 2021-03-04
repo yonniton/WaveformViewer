@@ -25,7 +25,7 @@ class SoundLevelView(
     private var threshold = 0
     private var volume = 0
 
-    fun setLevel(volume: Int, threshold: Int) {
+    private fun drawLevel(volume: Int, threshold: Int) {
         if (volume == this.volume && threshold == this.threshold) return
         this.volume = volume
         this.threshold = threshold
@@ -33,6 +33,13 @@ class SoundLevelView(
         // invalidate onDraw and draw voice points
         invalidate()
     }
+
+    /** volume vs threshold */
+    var soundLevel: Pair<Int, Int>
+        get() = volume to threshold
+        set(pair) {
+            drawLevel(pair.first, pair.second)
+        }
 
     public override fun onDraw(canvas: Canvas) {
         canvas.drawPaint(backgroundPaint)
