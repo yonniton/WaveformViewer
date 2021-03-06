@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.databinding.Observable.OnPropertyChangedCallback
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.google.android.exoplayer2.ExoPlayer
@@ -26,6 +28,7 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
 
     internal var noiseAlert: NoiseAlert? by observable(null) { _: KProperty<*>, _: NoiseAlert?, newValue: NoiseAlert? ->
         newValue?.also { newNoiseAlert ->
+
             disposable = newNoiseAlert.pollAudioInputAmplitude
                 .map { amplitude ->
                     amplitude.roundToInt() to (newNoiseAlert.noiseThreshold)
@@ -34,6 +37,16 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
                 .subscribe { noiseVersusThreshold ->
                     soundLevel.set(noiseVersusThreshold)
                 }
+
+            val updateMonitoringStatus = object : OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
+                    val status = "Monitoring".takeIf { newNoiseAlert.isMonitoring.get() }
+                        ?: "Stopped"
+                    monitoringStatus.set(status)
+                }
+            }
+            newNoiseAlert.isMonitoring.addOnPropertyChangedCallback(updateMonitoringStatus)
+            updateMonitoringStatus.onPropertyChanged(null, 0)
         }
     }
 
@@ -60,7 +73,7 @@ class NoiseAlert(
         private const val POLL_INTERVAL = 300L
     }
 
-    var isMonitoring = false
+    val isMonitoring = ObservableBoolean(false)
 
     var noiseThreshold = 5
 
@@ -99,7 +112,7 @@ class NoiseAlert(
         mediaProvider.stop()
         disposable = null
         soundMeter.stop()
-        isMonitoring = false
+        isMonitoring.set(false)
     }
 }
 
