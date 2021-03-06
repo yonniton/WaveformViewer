@@ -13,20 +13,41 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.SimpleExoPlayer
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import me.yonniton.waveform.R
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
+import kotlin.properties.Delegates.observable
+import kotlin.reflect.KProperty
 
 class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
 
-    internal var noiseAlert: NoiseAlert? = null
+    internal var noiseAlert: NoiseAlert? by observable(null) { _: KProperty<*>, _: NoiseAlert?, newValue: NoiseAlert? ->
+        newValue?.also { newNoiseAlert ->
+            disposable = newNoiseAlert.pollAudioInputAmplitude
+                .map { amplitude ->
+                    amplitude.roundToInt() to (newNoiseAlert.noiseThreshold)
+                }
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe { noiseVersusThreshold ->
+                    soundLevel.set(noiseVersusThreshold)
+                }
+        }
+    }
 
     val soundLevel = ObservableField(0 to (noiseAlert?.noiseThreshold ?: 0))
     val monitoringStatus = ObservableField("Stopped")
 
+    private var disposable: Disposable? = null
+        set(value) {
+            field?.dispose()
+            field = value
+        }
+
     override fun onCleared() {
-        super.onCleared()
+        disposable = null
     }
 }
 
@@ -50,7 +71,7 @@ class NoiseAlert(
         }
 
     /** poll audio-input */
-    private val pollAudioInputAmplitude: Observable<Double>
+    internal val pollAudioInputAmplitude: Observable<Double>
         get() = Observable.interval(POLL_INTERVAL, TimeUnit.MILLISECONDS, Schedulers.io())
             .map { soundMeter.amplitude }
 
