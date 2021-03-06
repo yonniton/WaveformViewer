@@ -2,10 +2,10 @@ package me.yonniton.waveform.ui.main
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import androidx.databinding.Observable.OnPropertyChangedCallback
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
@@ -18,6 +18,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import me.yonniton.waveform.NoiseAlertService
 import me.yonniton.waveform.R
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -26,32 +27,12 @@ import kotlin.reflect.KProperty
 
 class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
 
-    internal var noiseAlert: NoiseAlert? by observable(null) { _: KProperty<*>, _: NoiseAlert?, newValue: NoiseAlert? ->
-        newValue?.also { newNoiseAlert ->
-
-            disposable = newNoiseAlert.pollAudioInputAmplitude
-                .map { amplitude ->
-                    amplitude.roundToInt() to (newNoiseAlert.noiseThreshold)
-                }
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe { noiseVersusThreshold ->
-                    soundLevel.set(noiseVersusThreshold)
-                }
-
-            val updateMonitoringStatus = object : OnPropertyChangedCallback() {
-                override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
-                    val status = "Monitoring".takeIf { newNoiseAlert.isMonitoring.get() }
-                        ?: "Stopped"
-                    monitoringStatus.set(status)
-                }
-            }
-            newNoiseAlert.isMonitoring.addOnPropertyChangedCallback(updateMonitoringStatus)
-            updateMonitoringStatus.onPropertyChanged(null, 0)
-        }
+    var noiseAlert: NoiseAlert? by observable(null) { _: KProperty<*>, _: NoiseAlert?, newValue: NoiseAlert? ->
+        newValue?.also { bindNoiseAlert(it) }
     }
 
+    val isMonitoring = ObservableBoolean(false)
     val soundLevel = ObservableField(0 to (noiseAlert?.noiseThreshold ?: 0))
-    val monitoringStatus = ObservableField("Stopped")
 
     private var disposable: Disposable? = null
         set(value) {
@@ -61,6 +42,30 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
 
     override fun onCleared() {
         disposable = null
+    }
+
+    fun toggleMonitoring(context: Context, shouldEnable: Boolean) {
+        noiseAlert?.run {
+            val serviceIntent = Intent(context, NoiseAlertService::class.java)
+            if (shouldEnable) {
+                context.startService(serviceIntent)
+            } else {
+                context.stopService(serviceIntent)
+                stop()
+            }
+        }
+    }
+
+    private fun bindNoiseAlert(noiseAlert: NoiseAlert) {
+        disposable = noiseAlert.pollAudioInputAmplitude
+            .map { amplitude ->
+                amplitude.roundToInt() to (noiseAlert.noiseThreshold)
+            }
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe { noiseVersusThreshold ->
+                soundLevel.set(noiseVersusThreshold)
+            }
+        isMonitoring.set(noiseAlert.isMonitoring)
     }
 }
 
@@ -73,7 +78,7 @@ class NoiseAlert(
         private const val POLL_INTERVAL = 300L
     }
 
-    val isMonitoring = ObservableBoolean(false)
+    var isMonitoring = false
 
     var noiseThreshold = 5
 
@@ -112,7 +117,7 @@ class NoiseAlert(
         mediaProvider.stop()
         disposable = null
         soundMeter.stop()
-        isMonitoring.set(false)
+        isMonitoring = false
     }
 }
 

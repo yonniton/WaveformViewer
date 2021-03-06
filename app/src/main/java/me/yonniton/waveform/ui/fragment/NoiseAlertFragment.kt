@@ -19,7 +19,6 @@ import me.yonniton.waveform.R
 import me.yonniton.waveform.databinding.NoiseAlertBinding
 import me.yonniton.waveform.ui.main.NoiseAlertViewModel
 
-
 /**
  * source: [Android Example](https://androidexample.com/Detect_Noise_Or_Blow_Sound_-_Set_Sound_Frequency_Thersold/index.php?view=article_discription&aid=108&aaid=130)
  */
@@ -57,7 +56,6 @@ class NoiseAlertFragment : Fragment() {
         super.onResume()
         Log.i("NoiseAlertFragment", "==== onResume ===")
         context?.also {
-            it.startService(Intent(it, NoiseAlertService::class.java))
             it.bindService(
                 Intent(it, NoiseAlertService::class.java),
                 serviceConnection,

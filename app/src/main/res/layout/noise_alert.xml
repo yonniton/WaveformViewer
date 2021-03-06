@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -22,16 +23,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
+        <ToggleButton
+            android:id="@+id/toggle_monitoring"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.monitoringStatus}"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/volume"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:checked="@{viewModel.isMonitoring}"
+            android:onCheckedChanged="@{(view, isChecked) -> viewModel.toggleMonitoring(view.context, isChecked)}"
+            android:textOn="Monitoring"
+            android:textOff="Stopped"
+            app:layout_constraintWidth_percent="0.6"
+            app:layout_constraintTop_toBottomOf="@id/volume"
+            app:layout_constraintStart_toStartOf="@id/volume"
+            app:layout_constraintEnd_toEndOf="@id/volume" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

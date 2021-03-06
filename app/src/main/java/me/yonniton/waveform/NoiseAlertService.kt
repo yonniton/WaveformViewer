@@ -26,8 +26,8 @@ class NoiseAlertService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         with(noiseAlert) {
-            if (!isMonitoring.get()) {
-                isMonitoring.set(true)
+            if (!isMonitoring) {
+                isMonitoring = true
                 start()
             }
         }
