@@ -48,6 +48,19 @@
             app:layout_constraintBottom_toTopOf="@id/toggle_monitoring"
             app:layout_constraintEnd_toEndOf="@id/toggle_monitoring" />
 
+        <SeekBar
+            android:id="@+id/noise_threshold"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:onProgressChanged="@{(view, progress, fromUser) -> viewModel.updateNoiseThreshold(progress)}"
+            android:progress="@{viewModel.noiseThreshold}"
+            tools:progress="4"
+            android:max="10"
+            app:layout_constraintBottom_toTopOf="@id/audio_icon"
+            app:layout_constraintStart_toEndOf="@id/audio_icon"
+            app:layout_constraintEnd_toEndOf="@id/toggle_monitoring" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

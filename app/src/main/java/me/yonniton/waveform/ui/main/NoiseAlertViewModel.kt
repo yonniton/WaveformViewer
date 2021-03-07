@@ -32,6 +32,7 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
     }
 
     val isMonitoring = ObservableBoolean(false)
+    val noiseThreshold = ObservableInt(5)
     val amplitude = ObservableInt(0)
     val amplitudeIcon = ObservableInt(android.R.drawable.presence_audio_online)
 
@@ -57,6 +58,11 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
         }
     }
 
+    fun updateNoiseThreshold(progress: Int) {
+        noiseThreshold.set(progress)
+        noiseAlert?.noiseThreshold = progress
+    }
+
     private fun bindNoiseAlert(noiseAlert: NoiseAlert) {
         disposable = noiseAlert.pollAudioInputAmplitude
             .map { amplitude ->
@@ -72,6 +78,7 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
                 }.also { amplitudeIcon.set(it) }
             }
         isMonitoring.set(noiseAlert.isMonitoring)
+        updateNoiseThreshold(noiseAlert.noiseThreshold)
     }
 }
 
