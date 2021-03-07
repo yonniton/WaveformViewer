@@ -13,16 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <me.yonniton.waveform.ui.SoundLevelView
-            android:id="@+id/volume"
-            android:layout_width="230sp"
-            android:layout_height="60sp"
-            soundLevel="@{viewModel.soundLevel}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ToggleButton
             android:id="@+id/toggle_monitoring"
             android:layout_width="0dp"
@@ -32,9 +22,31 @@
             android:textOn="Monitoring"
             android:textOff="Stopped"
             app:layout_constraintWidth_percent="0.6"
-            app:layout_constraintTop_toBottomOf="@id/volume"
-            app:layout_constraintStart_toStartOf="@id/volume"
-            app:layout_constraintEnd_toEndOf="@id/volume" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/audio_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            tools:src="@android:drawable/presence_audio_online"
+            app:imageResource="@{viewModel.amplitudeIcon}"
+            app:layout_constraintStart_toStartOf="@id/toggle_monitoring"
+            app:layout_constraintBottom_toTopOf="@id/toggle_monitoring" />
+
+        <ProgressBar
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:progress="@{viewModel.amplitude}"
+            tools:progress="4"
+            android:max="10"
+            app:layout_constraintTop_toTopOf="@id/audio_icon"
+            app:layout_constraintStart_toEndOf="@id/audio_icon"
+            app:layout_constraintBottom_toTopOf="@id/toggle_monitoring"
+            app:layout_constraintEnd_toEndOf="@id/toggle_monitoring" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

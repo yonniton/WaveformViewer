@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.databinding.ObservableBoolean
-import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -32,7 +32,8 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
     }
 
     val isMonitoring = ObservableBoolean(false)
-    val soundLevel = ObservableField(0 to (noiseAlert?.noiseThreshold ?: 0))
+    val amplitude = ObservableInt(0)
+    val amplitudeIcon = ObservableInt(android.R.drawable.presence_audio_online)
 
     private var disposable: Disposable? = null
         set(value) {
@@ -63,7 +64,12 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
             }
             .subscribeOn(AndroidSchedulers.mainThread())
             .subscribe { noiseVersusThreshold ->
-                soundLevel.set(noiseVersusThreshold)
+                amplitude.set(noiseVersusThreshold.first)
+                if (noiseVersusThreshold.first > noiseVersusThreshold.second) {
+                    android.R.drawable.presence_audio_busy
+                } else {
+                    android.R.drawable.presence_audio_online
+                }.also { amplitudeIcon.set(it) }
             }
         isMonitoring.set(noiseAlert.isMonitoring)
     }
