@@ -2,6 +2,7 @@ package me.yonniton.waveform.noisealert.ui
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
@@ -14,6 +15,10 @@ import kotlin.properties.Delegates.observable
 import kotlin.reflect.KProperty
 
 class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
+
+    interface Callback {
+        fun chooseAlertAudio()
+    }
 
     var noiseAlert: NoiseAlert? by observable(null) { _: KProperty<*>, _: NoiseAlert?, newValue: NoiseAlert? ->
         newValue?.also { bindNoiseAlert(it) }
@@ -29,6 +34,8 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
             field?.dispose()
             field = value
         }
+
+    var callback: Callback? = null
 
     override fun onCleared() {
         disposable = null
@@ -49,6 +56,11 @@ class NoiseAlertViewModel : LifecycleObserver, ViewModel() {
     fun updateNoiseThreshold(progress: Int) {
         noiseThreshold.set(progress)
         noiseAlert?.noiseThreshold = progress
+    }
+
+    fun chooseAlertAudio() {
+        callback?.chooseAlertAudio()
+            ?: Log.w("NoiseAlertViewModel", "missing callback, could not choose an alert")
     }
 
     private fun bindNoiseAlert(noiseAlert: NoiseAlert) {

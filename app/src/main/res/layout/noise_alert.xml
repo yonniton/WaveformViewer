@@ -48,6 +48,15 @@
             app:layout_constraintBottom_toTopOf="@id/toggle_monitoring"
             app:layout_constraintEnd_toEndOf="@id/toggle_monitoring" />
 
+        <ImageButton
+            android:id="@+id/alert_audio"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_popup_reminder"
+            android:onClick="@{(view) -> viewModel.chooseAlertAudio()}"
+            app:layout_constraintStart_toStartOf="@id/toggle_monitoring"
+            app:layout_constraintBottom_toTopOf="@id/audio_icon" />
+
         <SeekBar
             android:id="@+id/noise_threshold"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -57,7 +66,8 @@
             android:progress="@{viewModel.noiseThreshold}"
             tools:progress="4"
             android:max="10"
-            app:layout_constraintBottom_toTopOf="@id/audio_icon"
+            app:layout_constraintTop_toTopOf="@id/alert_audio"
+            app:layout_constraintBottom_toBottomOf="@id/alert_audio"
             app:layout_constraintStart_toEndOf="@id/audio_icon"
             app:layout_constraintEnd_toEndOf="@id/toggle_monitoring" />
 

@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import me.yonniton.waveform.R
 import me.yonniton.waveform.databinding.NoiseAlertBinding
+import me.yonniton.waveform.common.AudioChooser
 import me.yonniton.waveform.noisealert.NoiseAlertService
 import me.yonniton.waveform.noisealert.NoiseAlertServiceBinder
 
@@ -38,6 +40,12 @@ class NoiseAlertFragment : Fragment() {
         }
     }
 
+    private val noiseAlertCallback = object : NoiseAlertViewModel.Callback {
+        override fun chooseAlertAudio() {
+            AudioChooser.show(this@NoiseAlertFragment)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, save: Bundle?): View {
         super.onCreateView(inflater, container, save)
 
@@ -45,6 +53,7 @@ class NoiseAlertFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(requireActivity())
             .get(NoiseAlertViewModel::class.java)
+            .apply { callback = noiseAlertCallback }
 
         return DataBindingUtil.inflate<NoiseAlertBinding>(inflater, R.layout.noise_alert, container, false).let { binding ->
             binding.viewModel = viewModel
@@ -62,6 +71,14 @@ class NoiseAlertFragment : Fragment() {
                 Context.BIND_AUTO_CREATE
             )
         } ?: Log.w("NoiseAlertFragment", "NoiseAlertService failed, missing Context")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == AudioChooser.RESULT_CODE_AUDIO_CHOOSER && resultCode == AppCompatActivity.RESULT_OK) {
+            data?.data?.also { uri ->
+                viewModel?.noiseAlert?.mediaProvider?.setMediaSource(uri)
+            }
+        }
     }
 
     private fun Activity.requestPermissions() {
