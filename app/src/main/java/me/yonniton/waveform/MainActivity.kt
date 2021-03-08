@@ -3,7 +3,7 @@ package me.yonniton.waveform
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import me.yonniton.waveform.ui.fragment.NoiseAlertFragment
+import me.yonniton.waveform.noisealert.ui.NoiseAlertFragment
 
 class MainActivity : AppCompatActivity() {
 

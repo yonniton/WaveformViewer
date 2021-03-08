@@ -1,12 +1,10 @@
-package me.yonniton.waveform
+package me.yonniton.waveform.noisealert
 
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
-import me.yonniton.waveform.ui.main.NoiseAlert
-import me.yonniton.waveform.ui.main.NoiseAlertViewModelFactory
 
 class NoiseAlertService : LifecycleService() {
 
@@ -19,7 +17,7 @@ class NoiseAlertService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        noiseAlert = NoiseAlertViewModelFactory(application)
+        noiseAlert = NoiseAlertFactory(application)
             .provideNoiseAlert()
     }
 

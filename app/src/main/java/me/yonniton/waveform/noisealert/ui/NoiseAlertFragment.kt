@@ -1,4 +1,4 @@
-package me.yonniton.waveform.ui.fragment
+package me.yonniton.waveform.noisealert.ui
 
 import android.Manifest
 import android.app.Activity
@@ -18,11 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import me.yonniton.waveform.NoiseAlertService
-import me.yonniton.waveform.NoiseAlertServiceBinder
 import me.yonniton.waveform.R
 import me.yonniton.waveform.databinding.NoiseAlertBinding
-import me.yonniton.waveform.ui.main.NoiseAlertViewModel
+import me.yonniton.waveform.noisealert.NoiseAlertService
+import me.yonniton.waveform.noisealert.NoiseAlertServiceBinder
 
 class NoiseAlertFragment : Fragment() {
 

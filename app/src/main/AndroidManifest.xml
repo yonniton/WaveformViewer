@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".NoiseAlertService"
+            android:name=".noisealert.NoiseAlertService"
             android:enabled="true"
             android:exported="false" />
     </application>
