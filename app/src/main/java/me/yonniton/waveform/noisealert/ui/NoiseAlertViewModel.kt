@@ -1,4 +1,4 @@
-package me.yonniton.waveform.ui.main
+package me.yonniton.waveform.noisealert.ui
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,8 @@ import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import me.yonniton.waveform.NoiseAlertService
+import me.yonniton.waveform.noisealert.NoiseAlertService
+import me.yonniton.waveform.noisealert.NoiseAlert
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates.observable
 import kotlin.reflect.KProperty

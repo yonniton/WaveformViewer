@@ -1,4 +1,4 @@
-package me.yonniton.waveform.ui.main
+package me.yonniton.waveform.noisealert
 
 import android.util.Log
 import io.reactivex.Observable

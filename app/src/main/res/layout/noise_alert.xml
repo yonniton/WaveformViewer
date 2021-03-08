@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="me.yonniton.waveform.ui.main.NoiseAlertViewModel" />
+            type="me.yonniton.waveform.noisealert.ui.NoiseAlertViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,8 +1,9 @@
-package me.yonniton.waveform.ui.main
+package me.yonniton.waveform.noisealert
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import me.yonniton.waveform.noisealert.ui.NoiseAlertViewModel
 
 class NoiseAlertFactory(private val application: Application) : ViewModelProvider.Factory {
 
