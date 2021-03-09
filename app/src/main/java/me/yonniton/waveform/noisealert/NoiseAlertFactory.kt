@@ -12,7 +12,10 @@ class NoiseAlertFactory(private val application: Application) : ViewModelProvide
 
     fun provideAppSettings() = AppSettings(application.getSharedPreferences("settings", 0))
 
-    fun provideMediaProvider() = MediaProvider(application)
+    fun provideMediaProvider() = MediaProvider(
+        application,
+        provideAppSettings()
+    )
 
     fun provideNoiseAlert() = NoiseAlert(
         provideSoundMeter(),

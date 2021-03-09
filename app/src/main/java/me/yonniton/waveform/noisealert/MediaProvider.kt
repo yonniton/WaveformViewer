@@ -10,14 +10,16 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import me.yonniton.waveform.R
+import me.yonniton.waveform.common.AppSettings
 
 class MediaProvider(
     private val context: Context,
-    uriAudio: Uri = Uri.fromFile(
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES)
-            .resolve("alert.mp3")
-    )
+    private val settings: AppSettings
 ) {
+
+    private companion object {
+        const val SETTING_ALERT_AUDIO_URI = "alert_audio_uri"
+    }
 
     var player: ExoPlayer? = null
         set(value) {
@@ -26,11 +28,17 @@ class MediaProvider(
         }
 
     private var uriAudio: Uri
+        get() = settings.getString(SETTING_ALERT_AUDIO_URI)
+            ?.let { Uri.parse(it) }
+            ?: Uri.fromFile(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES)
+                    .resolve("alert.mp3")
+            )
+        set(value) = settings.putString(SETTING_ALERT_AUDIO_URI, value.toString())
 
     init {
         this.player = SimpleExoPlayer.Builder(context)
             .build()
-        this.uriAudio = uriAudio
     }
 
     fun setMediaSource(uri: Uri) {
