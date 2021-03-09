@@ -4,10 +4,12 @@ import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import me.yonniton.waveform.common.AppSettings
 import java.util.concurrent.TimeUnit
 
 class NoiseAlert(
     private val soundMeter: SoundMeter,
+    private val settings: AppSettings,
     internal val mediaProvider: MediaProvider
 ) {
 
