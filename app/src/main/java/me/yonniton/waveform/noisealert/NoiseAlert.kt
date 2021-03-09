@@ -15,11 +15,14 @@ class NoiseAlert(
 
     private companion object {
         const val POLL_INTERVAL = 300L
+        const val SETTING_NOISE_THRESHOLD = "noise_threshold"
     }
 
     var isMonitoring = false
 
-    var noiseThreshold = 5
+    var noiseThreshold: Int
+        get() = settings.getInt(SETTING_NOISE_THRESHOLD, 5)
+        set(value) = settings.putInt(SETTING_NOISE_THRESHOLD, value)
 
     private var disposable: Disposable? = null
         set(value) {
